@@ -51,22 +51,26 @@ int main() {
             // particles[i].speed = -3.0f * 3.14f * airDynamicViscosity * particles[i].radius * particles[i].speed;
             glm::vec2 forces(0.f, 0.f);
             //forces += particles[i].mass * 9.81f * glm::vec2(0.f, -1.f); // Gravity
-            forces +=  - airDynamicViscosity * particles[i].radius * particles[i].velocity;
+            forces +=  - airDynamicViscosity * particles[i].radius * particles[i].velocity; //Friction
+
+            forces += gl::mouse_position();
 
             particles[i].velocity += forces * gl::delta_time_in_seconds() / particles[i].mass;
             particles[i].position += particles[i].velocity * gl::delta_time_in_seconds();
 
-            if(particles[i].position.y < -1.0f) {
-                particles[i].position.y = 1.0f;
-            }
+            // if(particles[i].position.y < -1.0f) {
+            //     particles[i].position.y = 1.0f;
+            // }
 
-            // // Check for collision with the window borders
-            // if (particles[i].position.x < -1.0f || particles[i].position.x > 1.0f) {
-            //     particles[i].direction.x *= -1.0f;
-            // }
-            // if (particles[i].position.y < -1.0f || particles[i].position.y > 1.0f) {
-            //     particles[i].direction.y *= -1.0f;
-            // }
+            // Check for collision with the window borders
+            if (particles[i].position.x < -1.0f || particles[i].position.x > 1.0f) {
+                particles[i].velocity.x = -particles[i].velocity.x;
+                particles[i].position.x = glm::clamp(particles[i].position.x, -1.0f, 1.0f);
+            }
+            if (particles[i].position.y < -1.0f || particles[i].position.y > 1.0f) {
+                particles[i].velocity.y = -particles[i].velocity.y;
+                particles[i].position.y = glm::clamp(particles[i].position.y, -1.0f, 1.0f);
+            }
 
             // Update position
             // particles[i].position += particles[i].speed * particles[i].direction * gl::delta_time_in_seconds();
