@@ -45,7 +45,7 @@ int main() {
             // Check for collision with the window borders
             particles[i].direction = normalizedDirection;
             particles[i].position += particles[i].speed * normalizedDirection * gl::delta_time_in_seconds();
-            //particles[i].position.y += particles[i].mass * -9.81f * gl::delta_time_in_seconds();
+            particles[i].position.y += particles[i].mass * -9.81f * gl::delta_time_in_seconds();
 
             // Check for collision with the window borders
             if (particles[i].position.x < -1.0f || particles[i].position.x > 1.0f) {
