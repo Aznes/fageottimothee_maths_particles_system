@@ -7,7 +7,8 @@ struct Particle {
     float radius = 0.05f;
     // float speed;
     float mass;
-    float friction = 0.1f; // Friction coefficient
+    float lifetime;
+    float age = 0.f;
 };
 
 int main() {
@@ -24,11 +25,13 @@ int main() {
         float maxPos = 1.0f;
         float minSpeed = 0.1f;
         float maxSpeed = 0.5f;
+        float minLifetime = 2.0f;
+        float maxLifetime = 5.0f;
 
         Particle particle;
         particle.position = glm::vec2(utils::rand(minPos, maxPos), utils::rand(minPos, maxPos));
         particle.velocity = glm::vec2(utils::rand(minPos, maxPos), utils::rand(minPos, maxPos));
-        // particle.speed = utils::rand(minSpeed, minSpeed);
+        particle.lifetime = utils::rand(minLifetime, maxLifetime);
         particle.mass = 0.1f;
         particles.push_back(particle);
     }
@@ -43,7 +46,16 @@ int main() {
 
         // TODO render particles
 
+        if (particles.size() == 0) {
+            return 0;
+        }
+
         for (size_t i = 0; i < particles.size(); i++) {
+            particles[i].age += gl::delta_time_in_seconds();
+            if (particles[i].age / particles[i].lifetime >= 1.0f) {
+                particles.erase(particles.begin() + i);
+                continue;
+            }
             // glm::vec2 normalizedDirection = glm::normalize(particles[i].direction);
 
             // Check for collision with the window borders
@@ -52,12 +64,14 @@ int main() {
             glm::vec2 forces(0.f, 0.f);
             //forces += particles[i].mass * 9.81f * glm::vec2(0.f, -1.f); // Gravity
             forces +=  - airDynamicViscosity * particles[i].radius * particles[i].velocity; //Friction
-
             forces += gl::mouse_position();
 
             particles[i].velocity += forces * gl::delta_time_in_seconds() / particles[i].mass;
             particles[i].position += particles[i].velocity * gl::delta_time_in_seconds();
 
+            
+
+            // Check for collision with the window bottom border and tp to the top
             // if(particles[i].position.y < -1.0f) {
             //     particles[i].position.y = 1.0f;
             // }
