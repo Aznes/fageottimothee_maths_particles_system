@@ -141,7 +141,7 @@ int main() {
             // particles[i].radius = particles[i].initialRadius * (1.0f - t);
 
             float t = glm::clamp((particles[i].lifetime - particles[i].age) / particles[i].ageOfDecreasing, 0.0f, 1.0f);
-            particles[i].radius = particles[i].initialRadius * t;
+            //particles[i].radius = particles[i].initialRadius * t;
 
             //particles[i].color = glm::mix(particles[i].startColor, particles[i].endColor, t);
 
@@ -162,7 +162,7 @@ int main() {
             glm::vec2 forces(0.f, 0.f);
             //forces += particles[i].mass * 9.81f * glm::vec2(0.f, -1.f); // Gravity
             //forces +=  - airDynamicViscosity * particles[i].radius * particles[i].velocity; //Friction
-            forces += particles[i].radius * particles[i].velocity; //Friction
+            //forces += particles[i].radius * particles[i].velocity; //Friction
             //forces += gl::mouse_position();
 
             particles[i].velocity += forces * gl::delta_time_in_seconds() / particles[i].mass;
@@ -209,24 +209,6 @@ int main() {
                     particles[i].position = circle.center + normal * (circle.radius + particles[i].radius);
                 }
             }
-
-            // Check for collision with the window bottom border and tp to the top
-            // if(particles[i].position.y < -1.0f) {
-            //     particles[i].position.y = 1.0f;
-            // }
-
-            // Check for collision with the window borders
-            // if (particles[i].position.x < -1.0f || particles[i].position.x > 1.0f) {
-            //     particles[i].velocity.x = -particles[i].velocity.x;
-            //     particles[i].position.x = glm::clamp(particles[i].position.x, -1.0f, 1.0f);
-            // }
-            // if (particles[i].position.y < -1.0f || particles[i].position.y > 1.0f) {
-            //     particles[i].velocity.y = -particles[i].velocity.y;
-            //     particles[i].position.y = glm::clamp(particles[i].position.y, -1.0f, 1.0f);
-            // }
-
-            // Update position
-            // particles[i].position += particles[i].speed * particles[i].direction * gl::delta_time_in_seconds();
 
             //Draw the particle
             utils::draw_disk(particles[i].position, particles[i].radius, particles[i].color);
