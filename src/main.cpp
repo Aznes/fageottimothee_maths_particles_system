@@ -11,6 +11,9 @@ struct Particle {
     float lifetime;
     float age = 0.0f;
     float ageOfDecreasing = 2.0f; // Time after which the radius starts to decrease
+    glm::vec4 startColor = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    glm::vec4 endColor = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    glm::vec4 color = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
 };
 
 int main() {
@@ -37,6 +40,8 @@ int main() {
         particle.mass = 0.1f;
         particle.initialRadius = particle.radius;
         particle.ageOfDecreasing = 2.0f;
+        particle.startColor = glm::vec4(utils::rand(0.0f, 1.0f), utils::rand(0.0f, 1.0f), utils::rand(0.0f, 1.0f), 1.0f);
+        particle.endColor = glm::vec4(utils::rand(0.0f, 1.0f), utils::rand(0.0f, 1.0f), utils::rand(0.0f, 1.0f), 1.0f);
         particles.push_back(particle);
     }
 
@@ -65,6 +70,8 @@ int main() {
             float t = glm::clamp((particles[i].lifetime - particles[i].age) / particles[i].ageOfDecreasing,
                      0.0f, 1.0f);
             particles[i].radius = particles[i].initialRadius * t;
+
+            particles[i].color = glm::mix(particles[i].startColor, particles[i].endColor, t);
 
             if (particles[i].age / particles[i].lifetime >= 1.0f) {
                 particles.erase(particles.begin() + i);
@@ -104,7 +111,7 @@ int main() {
             // particles[i].position += particles[i].speed * particles[i].direction * gl::delta_time_in_seconds();
 
             //Draw the particle
-            utils::draw_disk(particles[i].position, particles[i].radius, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+            utils::draw_disk(particles[i].position, particles[i].radius, particles[i].color);
         }
     }
 }
