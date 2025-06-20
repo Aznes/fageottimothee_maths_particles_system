@@ -21,6 +21,11 @@ struct Wall {
     glm::vec2 B;
 };
 
+struct Circle {
+    glm::vec2 center;
+    float radius;
+};
+
 int main() {
     gl::init("Particules!");
     gl::maximize_window();
@@ -71,6 +76,14 @@ int main() {
         walls.push_back(wall);
     }
 
+    std::vector<Circle> circles;
+    for (size_t i = 0; i < 3; i++) {
+        Circle circle;
+        circle.center = glm::vec2(utils::rand(-1.0f, 1.0f), utils::rand(-1.0f, 1.0f));
+        circle.radius = utils::rand(0.05f, 0.15f);
+        circles.push_back(circle);
+    }
+
     float airDynamicViscosity = 4.f;
 
     while (gl::window_is_open()) {
@@ -113,10 +126,14 @@ int main() {
             }
         }
 
+        for (const Circle& circle : circles) {
+            utils::draw_disk(circle.center, circle.radius, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+        }
+
         if (particles.size() == 0) {
             return 0;
         }
-        
+
         for (size_t i = 0; i < particles.size(); i++) {
             //particles[i].age += gl::delta_time_in_seconds();
 
@@ -177,8 +194,7 @@ int main() {
                         glm::vec2 P = wall.A + u * r;
                         glm::vec2 normal = glm::normalize(glm::vec2(-r.y, r.x)); // Perpendicular to the wall
                         particles[i].velocity = glm::reflect(particles[i].velocity, normal);
-                        // particles[i].position = glm::reflect(particles[i].position + particles[i].velocity, normal);
-                        particles[i].position = P +glm::normalize(   particles[i].velocity) * glm::distance(P, currPos) ;
+                        particles[i].position = P + glm::normalize(particles[i].velocity) * glm::distance(P, currPos) ;
                     }
                 }
             }
