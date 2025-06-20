@@ -199,6 +199,17 @@ int main() {
                 }
             }
 
+            for (const Circle& circle : circles) {
+                glm::vec2 particlePosition( particles[i].position.x, particles[i].position.y);
+                float distance = glm::distance(particlePosition, circle.center);
+
+                if (distance < circle.radius + particles[i].radius) {
+                    glm::vec2 normal = glm::normalize(particlePosition - circle.center);
+                    particles[i].velocity = glm::reflect(particles[i].velocity, normal);
+                    particles[i].position = circle.center + normal * (circle.radius + particles[i].radius);
+                }
+            }
+
             // Check for collision with the window bottom border and tp to the top
             // if(particles[i].position.y < -1.0f) {
             //     particles[i].position.y = 1.0f;
