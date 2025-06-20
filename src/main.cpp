@@ -10,6 +10,7 @@ struct Particle {
     float mass;
     float lifetime;
     float age = 0.0f;
+    float ageOfDecreasing = 2.0f; // Time after which the radius starts to decrease
 };
 
 int main() {
@@ -35,6 +36,7 @@ int main() {
         particle.lifetime = utils::rand(minLifetime, maxLifetime);
         particle.mass = 0.1f;
         particle.initialRadius = particle.radius;
+        particle.ageOfDecreasing = 2.0f;
         particles.push_back(particle);
     }
 
@@ -57,8 +59,12 @@ int main() {
 
             //particles[i].radius = (1 - (particles[i].age / particles[i].lifetime)) * particles[i].initialRadius;
 
-            float t = glm::clamp(particles[i].age / particles[i].lifetime, 0.0f, 1.0f);
-            particles[i].radius = particles[i].initialRadius * (1.0f - t);
+            // float t = glm::clamp(particles[i].age / particles[i].lifetime, 0.0f, 1.0f);
+            // particles[i].radius = particles[i].initialRadius * (1.0f - t);
+
+            float t = glm::clamp((particles[i].lifetime - particles[i].age) / particles[i].ageOfDecreasing,
+                     0.0f, 1.0f);
+            particles[i].radius = particles[i].initialRadius * t;
 
             if (particles[i].age / particles[i].lifetime >= 1.0f) {
                 particles.erase(particles.begin() + i);
