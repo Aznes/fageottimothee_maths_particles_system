@@ -71,7 +71,11 @@ int main() {
                      0.0f, 1.0f);
             particles[i].radius = particles[i].initialRadius * t;
 
-            particles[i].color = glm::mix(particles[i].startColor, particles[i].endColor, t);
+            //particles[i].color = glm::mix(particles[i].startColor, particles[i].endColor, t);
+
+            float p = 2.0f;             // p>1 : variation lente puis rapide
+            float t_ease = std::pow(t, p);
+            particles[i].color = glm::mix(particles[i].startColor, particles[i].endColor, t_ease);
 
             if (particles[i].age / particles[i].lifetime >= 1.0f) {
                 particles.erase(particles.begin() + i);
