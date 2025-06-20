@@ -5,10 +5,11 @@ struct Particle {
     glm::vec2 position;
     glm::vec2 velocity;
     float radius = 0.05f;
+    float initialRadius;
     // float speed;
     float mass;
     float lifetime;
-    float age = 0.f;
+    float age = 0.0f;
 };
 
 int main() {
@@ -33,6 +34,7 @@ int main() {
         particle.velocity = glm::vec2(utils::rand(minPos, maxPos), utils::rand(minPos, maxPos));
         particle.lifetime = utils::rand(minLifetime, maxLifetime);
         particle.mass = 0.1f;
+        particle.initialRadius = particle.radius;
         particles.push_back(particle);
     }
 
@@ -52,6 +54,12 @@ int main() {
 
         for (size_t i = 0; i < particles.size(); i++) {
             particles[i].age += gl::delta_time_in_seconds();
+
+            //particles[i].radius = (1 - (particles[i].age / particles[i].lifetime)) * particles[i].initialRadius;
+
+            float t = glm::clamp(particles[i].age / particles[i].lifetime, 0.0f, 1.0f);
+            particles[i].radius = particles[i].initialRadius * (1.0f - t);
+
             if (particles[i].age / particles[i].lifetime >= 1.0f) {
                 particles.erase(particles.begin() + i);
                 continue;
