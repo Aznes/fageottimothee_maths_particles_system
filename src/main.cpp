@@ -30,11 +30,11 @@ int main() {
     // TODO: create an array of particles
 
     std::vector<Particle> particles;
-    for (size_t i = 0; i < 1; i++) {
+    for (size_t i = 0; i < 10; i++) {
         float minPos = -1.0f;
         float maxPos = 1.0f;
         float minSpeed = 0.1f;
-        float maxSpeed = 2.5f;
+        float maxSpeed = 0.5f;
         float minLifetime = 2.0f;
         float maxLifetime = 5.0f;
 
@@ -116,7 +116,7 @@ int main() {
         if (particles.size() == 0) {
             return 0;
         }
-
+        
         for (size_t i = 0; i < particles.size(); i++) {
             //particles[i].age += gl::delta_time_in_seconds();
 
@@ -149,30 +149,9 @@ int main() {
             //forces += gl::mouse_position();
 
             particles[i].velocity += forces * gl::delta_time_in_seconds() / particles[i].mass;
+            glm::vec2 prevPos = particles[i].position;
             particles[i].position += particles[i].velocity * gl::delta_time_in_seconds();
-
-            
-
-            // Check for collision with the window bottom border and tp to the top
-            // if(particles[i].position.y < -1.0f) {
-            //     particles[i].position.y = 1.0f;
-            // }
-
-            // Check for collision with the window borders
-            // if (particles[i].position.x < -1.0f || particles[i].position.x > 1.0f) {
-            //     particles[i].velocity.x = -particles[i].velocity.x;
-            //     particles[i].position.x = glm::clamp(particles[i].position.x, -1.0f, 1.0f);
-            // }
-            // if (particles[i].position.y < -1.0f || particles[i].position.y > 1.0f) {
-            //     particles[i].velocity.y = -particles[i].velocity.y;
-            //     particles[i].position.y = glm::clamp(particles[i].position.y, -1.0f, 1.0f);
-            // }
-
-            // Update position
-            // particles[i].position += particles[i].speed * particles[i].direction * gl::delta_time_in_seconds();
-
-            //Draw the particle
-            utils::draw_disk(particles[i].position, particles[i].radius, particles[i].color);
+            glm::vec2 currPos = particles[i].position;
 
             for (const Wall& wall : walls) {
                 glm::vec2 particlePosition( particles[i].position.x, particles[i].position.y);
@@ -198,9 +177,32 @@ int main() {
                         glm::vec2 P = wall.A + u * r;
                         glm::vec2 normal = glm::normalize(glm::vec2(-r.y, r.x)); // Perpendicular to the wall
                         particles[i].velocity = glm::reflect(particles[i].velocity, normal);
+                        // particles[i].position = glm::reflect(particles[i].position + particles[i].velocity, normal);
+                        particles[i].position = P +glm::normalize(   particles[i].velocity) * glm::distance(P, currPos) ;
                     }
                 }
             }
+
+            // Check for collision with the window bottom border and tp to the top
+            // if(particles[i].position.y < -1.0f) {
+            //     particles[i].position.y = 1.0f;
+            // }
+
+            // Check for collision with the window borders
+            // if (particles[i].position.x < -1.0f || particles[i].position.x > 1.0f) {
+            //     particles[i].velocity.x = -particles[i].velocity.x;
+            //     particles[i].position.x = glm::clamp(particles[i].position.x, -1.0f, 1.0f);
+            // }
+            // if (particles[i].position.y < -1.0f || particles[i].position.y > 1.0f) {
+            //     particles[i].velocity.y = -particles[i].velocity.y;
+            //     particles[i].position.y = glm::clamp(particles[i].position.y, -1.0f, 1.0f);
+            // }
+
+            // Update position
+            // particles[i].position += particles[i].speed * particles[i].direction * gl::delta_time_in_seconds();
+
+            //Draw the particle
+            utils::draw_disk(particles[i].position, particles[i].radius, particles[i].color);
         }
     }
 }
