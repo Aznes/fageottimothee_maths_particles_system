@@ -29,7 +29,7 @@ int main() {
         float minPos = -1.0f;
         float maxPos = 1.0f;
         float minSpeed = 0.1f;
-        float maxSpeed = 0.5f;
+        float maxSpeed = 2.5f;
         float minLifetime = 2.0f;
         float maxLifetime = 5.0f;
 
@@ -55,14 +55,45 @@ int main() {
 
         // TODO render particles
 
+        // First wall
+        glm::vec2 A(-1.0f, 0.0f);
+        glm::vec2 B( 1.0f, 0.0f);
+        utils::draw_line(A, B, 0.01f, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+        // Second wall
+        glm::vec2 C( 0.0f,-1.0f);
+        glm::vec2 D( gl::mouse_position());
+        utils::draw_line(C, D, 0.01f, glm::vec4(0.0f, 1.0f, 1.0f, 1.0f));
+
+        // Cross check
+        glm::vec2 r = B - A;
+        glm::vec2 s = D - C;
+
+        glm::mat2 M(r, -s);    
+
+        glm::vec2 v = C - A;
+
+        float det = glm::determinant(M);
+
+        if (fabs(det) > 1e-6f) {
+            glm::vec2 t = glm::inverse(M) * v;
+
+            float u = t.x;
+            float v = t.y;
+
+            if (u >= 0.0f && u <= 1.0f && v >= 0.0f && v <= 1.0f) {
+                // crossing point
+                glm::vec2 P = A + u * r;
+                utils::draw_disk(P, 0.05f, glm::vec4(0.0f,1.0f,0.0f,1.0f));
+            }
+        }
+
         if (particles.size() == 0) {
             return 0;
         }
 
         for (size_t i = 0; i < particles.size(); i++) {
             particles[i].age += gl::delta_time_in_seconds();
-
-            //particles[i].radius = (1 - (particles[i].age / particles[i].lifetime)) * particles[i].initialRadius;
 
             // float t = glm::clamp(particles[i].age / particles[i].lifetime, 0.0f, 1.0f);
             // particles[i].radius = particles[i].initialRadius * (1.0f - t);
@@ -81,15 +112,16 @@ int main() {
                 particles.erase(particles.begin() + i);
                 continue;
             }
+
             // glm::vec2 normalizedDirection = glm::normalize(particles[i].direction);
 
-            // Check for collision with the window borders
-            //particles[i].direction = normalizedDirection;
+            // particles[i].direction = normalizedDirection;
             // particles[i].speed = -3.0f * 3.14f * airDynamicViscosity * particles[i].radius * particles[i].speed;
+            
             glm::vec2 forces(0.f, 0.f);
             //forces += particles[i].mass * 9.81f * glm::vec2(0.f, -1.f); // Gravity
             forces +=  - airDynamicViscosity * particles[i].radius * particles[i].velocity; //Friction
-            forces += gl::mouse_position();
+            //forces += gl::mouse_position();
 
             particles[i].velocity += forces * gl::delta_time_in_seconds() / particles[i].mass;
             particles[i].position += particles[i].velocity * gl::delta_time_in_seconds();
