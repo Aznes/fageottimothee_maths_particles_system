@@ -123,13 +123,12 @@ int main() {
             // float t = glm::clamp(particles[i].age / particles[i].lifetime, 0.0f, 1.0f);
             // particles[i].radius = particles[i].initialRadius * (1.0f - t);
 
-            float t = glm::clamp((particles[i].lifetime - particles[i].age) / particles[i].ageOfDecreasing,
-                     0.0f, 1.0f);
+            float t = glm::clamp((particles[i].lifetime - particles[i].age) / particles[i].ageOfDecreasing, 0.0f, 1.0f);
             particles[i].radius = particles[i].initialRadius * t;
 
             //particles[i].color = glm::mix(particles[i].startColor, particles[i].endColor, t);
 
-            float p = 2.0f;             // p>1 : variation lente puis rapide
+            float p = 2.0f;
             float t_ease = std::pow(t, p);
             particles[i].color = glm::mix(particles[i].startColor, particles[i].endColor, t_ease);
 
@@ -175,31 +174,33 @@ int main() {
             //Draw the particle
             utils::draw_disk(particles[i].position, particles[i].radius, particles[i].color);
 
-            // glm::vec2 particlePosition( particles[i].position.x, particles[i].position.y);
+            for (const Wall& wall : walls) {
+                glm::vec2 particlePosition( particles[i].position.x, particles[i].position.y);
 
-            // // Cross check
-            // glm::vec2 r = B - A;
-            // glm::vec2 s = particlePosition - particlePosition;
+                // Cross check
+                glm::vec2 r = wall.B - wall.A;
+                glm::vec2 s = particlePosition - (particlePosition * 1.1f);
 
-            // glm::mat2 M(r, -s);    
+                glm::mat2 M(r, -s);    
 
-            // glm::vec2 v = particlePosition - A;
+                glm::vec2 v = particlePosition - wall.A;
 
-            // float det = glm::determinant(M);
+                float det = glm::determinant(M);
 
-            // if (fabs(det) > 1e-6f) {
-            //     glm::vec2 t = glm::inverse(M) * v;
+                if (fabs(det) > 1e-6f) {
+                    glm::vec2 t = glm::inverse(M) * v;
 
-            //     float u = t.x;
-            //     float v = t.y;
+                    float u = t.x;
+                    float v = t.y;
 
-            //     if (u >= 0.0f && u <= 1.0f && v >= 0.0f && v <= 1.0f) {
-            //         // crossing point
-            //         glm::vec2 P = A + u * r;
-            //         utils::draw_disk(P, 0.05f, glm::vec4(0.0f,1.0f,0.0f,1.0f));
-            //         particles[i].velocity = glm::reflect(particles[i].velocity, glm::normalize(B - A));
-            //     }
-            // }
+                    if (u >= 0.0f && u <= 1.0f && v >= 0.0f && v <= 1.0f) {
+                        // crossing point
+                        glm::vec2 P = wall.A + u * r;
+                        glm::vec2 normal = glm::normalize(glm::vec2(-r.y, r.x)); // Perpendicular to the wall
+                        particles[i].velocity = glm::reflect(particles[i].velocity, normal);
+                    }
+                }
+            }
         }
     }
 }
