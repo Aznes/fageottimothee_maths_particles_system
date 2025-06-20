@@ -53,8 +53,21 @@ int main() {
     std::vector<Wall> walls;
     for (size_t i = 0; i < 4; i++) {
         Wall wall;
-        wall.A = glm::vec2(utils::rand(-1.0f, 1.0f), utils::rand(-1.0f, 1.0f));
-        wall.B = glm::vec2(utils::rand(-1.0f, 1.0f), utils::rand(-1.0f, 1.0f));
+
+        if (i == 0) {
+            wall.A = glm::vec2(-1.0f, -1.0f);
+            wall.B = glm::vec2( 1.0f, -1.0f);
+        } else if (i == 1) {
+            wall.A = glm::vec2( 1.0f, -1.0f);
+            wall.B = glm::vec2( 1.0f,  1.0f);
+        } else if (i == 2) {
+            wall.A = glm::vec2( 1.0f,  1.0f);
+            wall.B = glm::vec2(-1.0f,  1.0f);
+        } else {
+            wall.A = glm::vec2(-1.0f,  1.0f);
+            wall.B = glm::vec2(-1.0f, -1.0f);
+        }
+
         walls.push_back(wall);
     }
 
