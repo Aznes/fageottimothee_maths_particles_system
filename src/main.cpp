@@ -4,41 +4,47 @@
 struct Particle {
     glm::vec2 position;
     glm::vec2 velocity;
-    float radius = 0.005f;
-    glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    float     radius = 0.005f;
+    glm::vec4 color  = glm::vec4(1.0f,1.0f,1.0f,1.0f);
 };
-
 
 int main() {
     gl::init("Particules!");
     gl::maximize_window();
 
-    std::vector<Particle> particles;
-    for (size_t i = 0; i < 5000; i++) {
-        float minPos = 0.0f;
-        float maxPos = 1.0f;
+    constexpr float PI = 3.14159265358979323846f;
+    constexpr float R  = 0.3f;
 
-        Particle particle;
-        particle.position = glm::vec2(utils::rand(minPos, maxPos), utils::rand(minPos, maxPos));
-        particles.push_back(particle);
-    }
-
-    glm::vec2 origin(0.0f, 0.0f);
-    glm::vec2 xEnd  (0.80f, 0.25f);
-    glm::vec2 yEnd  (0.25f, 0.80f);
+    glm::vec2 origin(0.0f,0.0f);
+    glm::vec2 xEnd  (0.0f,1.0f);
+    glm::vec2 yEnd  (1.0f,0.0f);
     glm::vec2 bx = xEnd - origin;
     glm::vec2 by = yEnd - origin;
+    glm::vec2 center = origin + (bx + by) * 0.5f;
+
+    std::vector<Particle> particles;
+    for (size_t i = 0; i < 1000; i++) {
+        float u = utils::rand(0.0f, 1.0f);
+        float v = utils::rand(0.0f, 1.0f);
+        float r = R * u;
+        float theta = 2.0f * PI * v;
+
+        glm::vec2 localPos = glm::vec2(r * std::cos(theta), r * std::sin(theta));
+        glm::vec2 worldPos = center + bx * localPos.x + by * localPos.y;
+
+        Particle p;
+        p.position = worldPos;
+        particles.push_back(p);
+    }
 
     while (gl::window_is_open()) {
-        glClearColor(0.f, 0.f, 0.f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         utils::draw_line(origin, xEnd, 0.005f, glm::vec4(1,0,0,1));
         utils::draw_line(origin, yEnd, 0.005f, glm::vec4(0,1,0,1));
 
-        for (size_t i = 0; i < particles.size(); i++) {
-            glm::vec2 worldPos = origin + bx * particles[i].position.x + by * particles[i].position.y;
-            utils::draw_disk(worldPos, particles[i].radius, particles[i].color);
+        for (auto& p : particles) {
+            utils::draw_disk(p.position, p.radius, p.color);
         }
     }
 }
