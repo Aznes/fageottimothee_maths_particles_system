@@ -12,7 +12,6 @@ int main() {
     gl::init("Particules!");
     gl::maximize_window();
 
-    constexpr float PI = 3.14159265358979323846f;
     constexpr float R  = 0.3f;
 
     glm::vec2 origin(0.0f,0.0f);
@@ -24,14 +23,15 @@ int main() {
 
     std::vector<Particle> particles;
     for (size_t i = 0; i < 1000; i++) {
-        float u = utils::rand(0.0f, 1.0f);
-        float v = utils::rand(0.0f, 1.0f);
-        float r = R * u;
-        float theta = 2.0f * PI * v;
+        glm::vec2 localPos;
 
-        glm::vec2 localPos = glm::vec2(r * std::cos(theta), r * std::sin(theta));
+        do {
+            float x = utils::rand(-R, R);
+            float y = utils::rand(-R, R);
+            localPos = glm::vec2(x, y);
+        } while (glm::length(localPos) > R);
+
         glm::vec2 worldPos = center + bx * localPos.x + by * localPos.y;
-
         Particle p;
         p.position = worldPos;
         particles.push_back(p);
