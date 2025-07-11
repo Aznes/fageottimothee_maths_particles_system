@@ -24,8 +24,8 @@ int main() {
     }
 
     glm::vec2 origin(0.0f, 0.0f);
-    glm::vec2 xEnd  (1.0f, 0.0f);
-    glm::vec2 yEnd  (0.0f, 1.0f);
+    glm::vec2 xEnd  (0.80f, 0.25f);
+    glm::vec2 yEnd  (0.25f, 0.80f);
     glm::vec2 bx = xEnd - origin;
     glm::vec2 by = yEnd - origin;
 
