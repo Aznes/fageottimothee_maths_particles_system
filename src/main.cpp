@@ -49,7 +49,13 @@ int main() {
     
         draw_parametric([](float t) {
             float angle = 2.0f * PI * t;
-            return circleCenterPosition + circleRadius * glm::vec2(std::cos(angle), std::sin(angle));
+            float x = 16.0f * std::pow(std::sin(angle), 3);
+            float y = 13.0f * std::cos(angle)
+                    -  5.0f * std::cos(2.0f * angle)
+                    -  2.0f * std::cos(3.0f * angle)
+                    -      std::cos(4.0f * angle);
+            glm::vec2 p = glm::vec2(x, y) * (circleRadius / 16.0f);
+            return circleCenterPosition + p;
         });
     }
 }
