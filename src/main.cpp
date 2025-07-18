@@ -12,6 +12,13 @@ float circleRadius  = 0.5f;
 int segmentsAmount = 100;
 float segmentsThickness = 0.01f;
 
+struct Particle {
+    glm::vec2 position;
+    glm::vec2 velocity;
+    float     radius = 0.005f;
+    glm::vec4 color  = glm::vec4(1.0f,0.0f,0.0f,1.0f);
+};
+
 glm::vec2 bernstein1(const glm::vec2& p0, const glm::vec2& p1, float t) {
     return (1 - t) * p0 + t * p1;
 }
@@ -41,15 +48,31 @@ int main() {
     gl::init("Particules!");
     gl::maximize_window();
 
+    std::vector<Particle> particles;
+    for (size_t i = 0; i < 100; i++) {
+        Particle particle;
+        particles.push_back(particle);
+    }
+
+    std::vector<float> times;
+    for (size_t i = 0; i < 100; i++) {
+        float time = utils::rand(0.0f,1.0f);
+        times.push_back(time);
+    }
+
     while (gl::window_is_open()) {
         glClearColor(0.f, 0.f, 0.f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT);
     
         glm::vec2 q0(-0.8f,  0.0f), q1(gl::mouse_position()), q2(0.8f, 0.0f);
 
-        glm::vec2 c0(-0.8f, -0.8f), c1(-0.4f, 0.8f), c2(gl::mouse_position()), c3(0.8f, -0.2f);
-
         draw_parametric([&](float t) { return bernstein2(q0, q1, q2, t); });
-        draw_parametric([&](float t) { return bernstein3(c0, c1, c2, c3, t); });
+
+        for (size_t i = 0; i < particles.size(); ++i) {
+            auto& p = particles[i];
+            float t = times[i];
+            p.position = glm::vec3(bernstein2(q0, q1, q2, t), 1.0f);
+            utils::draw_disk(p.position, p.radius, p.color);
+        }
     }
 }
